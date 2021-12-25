@@ -14,6 +14,7 @@ using Nop.Services.Payments;
 using Nop.Web.Framework;
 using System.Threading.Tasks;
 using Nop.Services.Common;
+using Nop.Services.Orders;
 
 namespace Nop.Plugin.Payments.ChronoPay
 {
@@ -33,6 +34,7 @@ namespace Nop.Plugin.Payments.ChronoPay
         private readonly IAddressService _addressService;
         private readonly IStateProvinceService _stateProvinceService;
         private readonly ICountryService _countryService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         #endregion
 
@@ -44,7 +46,8 @@ namespace Nop.Plugin.Payments.ChronoPay
             CurrencySettings currencySettings,
             IAddressService addressService,
             IStateProvinceService stateProvinceService,
-            ICountryService countryService)
+            ICountryService countryService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _chronoPayPaymentSettings = chronoPayPaymentSettings;
             _currencyService = currencyService;
@@ -55,6 +58,7 @@ namespace Nop.Plugin.Payments.ChronoPay
             _addressService = addressService;
             _stateProvinceService = stateProvinceService;
             _countryService = countryService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         #endregion
@@ -80,7 +84,7 @@ namespace Nop.Plugin.Payments.ChronoPay
         {
             var gatewayUrl = new Uri(_chronoPayPaymentSettings.GatewayUrl);
 
-            var post = new RemotePost
+            var post = new RemotePost(_httpContextAccessor,_webHelper)
             {
                 FormName = "ChronoPay",
                 Url = gatewayUrl.ToString(),
